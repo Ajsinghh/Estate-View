@@ -5,12 +5,11 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   server: {
-    watch:{
-      usePolling: true,
-    },
-    hmr : {
-      protocol: 'ws',
-      host: 'localhost',
+    proxy:{
+      '/api':{
+        target: 'http://localhost:3000',
+        secure: false,
+      }
     }
   },
 });
