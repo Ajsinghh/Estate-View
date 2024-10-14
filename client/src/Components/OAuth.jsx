@@ -30,7 +30,14 @@ const OAuth = () => {
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      console.log("could not sign in with google", error);
+        if (error.code === "auth/popup-blocked") {
+          console.log(
+            "Popup was blocked. Try allowing popups or use a redirect method."
+          );
+        } else {
+          console.log("could not sign in with google", error);
+        }
+
     }
   };
 
