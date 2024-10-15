@@ -1,7 +1,7 @@
 import { app } from "../firebase";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { signInSuccess } from "../redux/user/userSilce";
+import { signInFaliure, signInStart, signInSuccess } from "../redux/user/userSilce";
 import { useNavigate } from "react-router-dom";
 
 const OAuth = () => {
@@ -9,6 +9,7 @@ const OAuth = () => {
   const dispatch = useDispatch();
   const handleGoogleCLick = async () => {
     try {
+      dispatch(signInStart())
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
 
@@ -27,6 +28,10 @@ const OAuth = () => {
         }),
       });
       const data = await res.json();
+      if(data.success === false){
+        dispatch(signInFaliure(data.message));
+        return;
+      }
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
@@ -45,7 +50,7 @@ const OAuth = () => {
     <button
       onClick={handleGoogleCLick}
       type="button"
-      className="bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95"
+      className="bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
     >
       continue with google
     </button>

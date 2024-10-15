@@ -8,6 +8,9 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import {
+  deleteUserFaliure,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFaliure,
   updateUserStart,
   updateUserSuccess,
@@ -69,13 +72,27 @@ const Profile = () => {
 
     const data = await res.json();
 
-    if (data.success == false) {
+    if (data.success === false) {
       dispatch(updateUserFaliure(data.message));
       return;
     }
     dispatch(updateUserSuccess(data));
     setUpdateSuccess(true);
   };
+
+  const handelDeleteUser = async()=>{
+     dispatch(deleteUserStart())
+     const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+       method: "DELETE",
+      })
+     const data = await res.json();
+     if(data.success === false){
+      dispatch(deleteUserFaliure(data.message));
+      return;
+     }
+     dispatch(deleteUserSuccess());
+
+  }
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -127,14 +144,14 @@ const Profile = () => {
           className="border p-3 rounded-lg"
           onChange={handleChange}
         />
-        <button disabled={loading} className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:80">
+        <button disabled={loading} className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
           {
             loading ? 'Loading...' : 'Update'
           }
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span onClick={handelDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ''}</p>
