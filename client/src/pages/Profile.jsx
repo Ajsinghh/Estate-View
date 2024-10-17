@@ -215,7 +215,7 @@ const Profile = () => {
       <button onClick={handleShowListings} className="text-green-700 w-full">
         Show Listings
       </button>
-      <p>{showListingError ? "Show Listing is showing error" : ""}</p>
+      <p>{showListingError ? "Unauthorized" : ""}</p>
       {userListings && userListings.length > 0 && (
         <div className="flex flex-col gap-4">
           <h1 className="text-center mt-7 text-2xl font-semibold">
