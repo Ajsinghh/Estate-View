@@ -4,7 +4,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
-import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from "react-icons/fa";
+import {
+  FaBath,
+  FaBed,
+  FaChair,
+  FaMapMarkerAlt,
+  FaParking,
+  FaShare,
+} from "react-icons/fa";
+import { useSelector } from "react-redux";
+import Contact from "../Components/Contact";
 
 const Listing = () => {
   SwiperCore.use([Navigation]);
@@ -12,28 +21,30 @@ const Listing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const[copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false); 
   useEffect(() => {
     const fetchListing = async () => {
-    
-        setLoading(true);
-        setError(false);
-        const listingId = params.listingId;
-        const res = await fetch(`/api/listing/get/${listingId}`);
-        const data = await res.json();
-        if (data.success === false) {
-          setError(true);
-          setLoading(false);
-          console.log(data.message);
-          return;
-        }
-        setListing(data);
+      setLoading(true);
+      setError(false);
+      const listingId = params.listingId;
+      const res = await fetch(`/api/listing/get/${listingId}`);
+      const data = await res.json();
+      if (data.success === false) {
+        setError(true);
         setLoading(false);
-        setError(false);
-      
+        console.log(data.message);
+        return;
+      }
+      setListing(data);
+      setLoading(false);
+      setError(false);
     };
     fetchListing();
   }, [params.listingId]);
+
+  const { currentUser } = useSelector((state) => state.user);
+
   return (
     <main>
       {loading && <p className="text-center my-7 text-2xl "></p>}
@@ -113,17 +124,19 @@ const Listing = () => {
               </li>
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaParking className="text-lg" />
-                {listing.parking
-                  ? `Parking Spot`
-                  : `No Parking`}
+                {listing.parking ? `Parking Spot` : `No Parking`}
               </li>
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaChair className="text-lg" />
-                {listing.furnished
-                  ? `Furnished`
-                  : `Unfurnished`}
+                {listing.furnished ? `Furnished` : `Unfurnished`}
               </li>
             </ul>
+            {currentUser && currentUser._id !== listing.userRef && !contact && (
+              <button onClick={()=> setContact(true)} className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3 ">
+                Contact Landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing}/>}
           </div>
         </>
       )}
