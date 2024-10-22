@@ -110,17 +110,26 @@ const CreateListing = () => {
     ) {
       setFormData({ ...formData, [e.target.id]: e.target.value });
     }
+    if (
+      e.target.type === "number"
+    ) {
+      setFormData({ ...formData, [e.target.id]: Number(e.target.value) });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (formData.imageUrls.length < 1)
-        return setError("You must upload at least one image");
-      if (formData.regularPrice < formData.discountPrice)
-        return setError("Discount Price must be lower than the regular price");
       setLoading(true);
       setError(false);
+      if (formData.imageUrls.length < 1){
+        setLoading(false);
+        return setError("You must upload at least one image");
+      }
+      if (formData.regularPrice < formData.discountPrice){
+        setLoading(false);
+        return setError("Discount Price must be lower than the regular price");
+      }
       const res = await fetch("/api/listing/create", {
         method: "POST",
         headers: {
